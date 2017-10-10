@@ -1,0 +1,5 @@
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix musicid: <http://music.metadata.database.musicid/> .
+@prefix tag: <http://music.metadata.database.tag/> .
+@prefix situation: <http://music.metadata.database.situation/> .
