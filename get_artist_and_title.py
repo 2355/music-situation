@@ -126,7 +126,6 @@ def itunes_search(artist, title):
     term = artist + ' ' + title
     term = urllib.parse.quote_plus(term)
 
-    err_count = 0
     while True:
         try:
             post = urllib.request.urlopen(base + params + term)
@@ -141,22 +140,20 @@ def itunes_search(artist, title):
 
             return response
         except urllib.error.HTTPError as err:
-            err_count += 1
-            if err_count >= 5:
-                # エラーが5回以上続いたらSLEEP_TIME後に再開
-                next_time = datetime.datetime.now() + datetime.timedelta(minutes=SLEEP_TIME)
-                print('--------------------------------')
-                print('iTunes API error')
-                print(err)  # HTTP Error 403: Forbidden
-                print('Wait until', next_time.strftime('%Y-%m-%d %H:%M:%S'))
-                print('--------------------------------')
-                time.sleep(60*SLEEP_TIME)
+            next_time = datetime.datetime.now() + datetime.timedelta(minutes=SLEEP_TIME)
+            print('--------------------------------')
+            print('iTunes API error')
+            print(err)  # HTTP Error 403: Forbidden
+            print('Wait until', next_time.strftime('%Y-%m-%d %H:%M:%S'))
+            print('--------------------------------')
+            time.sleep(60*SLEEP_TIME)
 
 
 # Gracenote API
 def gracenote_search(artist, title):
     response = {'artist': '', 'title': ''}
 
+    err_count = 0
     while True:
         try:
             result = pygn.search(clientID=GN_CID, userID=GN_UID,
@@ -166,12 +163,17 @@ def gracenote_search(artist, title):
                 response['title'] = html.unescape(result['track_title']).replace('\u3000', ' ')
 
             return response
-        except Exception as err:
-            print('--------------------------------')
-            print('Gracenote API error')
-            print(err)
-            print('--------------------------------')
+        except UnboundLocalError as err:
             time.sleep(10)
+
+            # エラー5回以上でreturn
+            err_count += 1
+            if err_count >= 5:
+                print('--------------------------------')
+                print('Gracenote API error')
+                print(err)
+                print('--------------------------------')
+                return response
 
 
 # MusicBrainz API
@@ -192,6 +194,9 @@ def musicbrainz_search(artist, title):
 
             return response
         except musicbrainzngs.musicbrainz.NetworkError as err:
+            time.sleep(10)
+
+            # エラー5回以上でreturn
             err_count += 1
             if err_count >= 5:
                 print('--------------------------------')
@@ -289,7 +294,7 @@ def get_track(lists, api):
     return response, remnant, artist, title
 
 
-# tracksなしならば再検索
+# tracksなしならばクエリを変えて再検索
 def re_get_track(tweet2, api, ans_dict, sub_dict):
     tracks = {'artist': '', 'title': ''}
 

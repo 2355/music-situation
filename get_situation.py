@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+from final.keys import SQL_HOST, SQL_USER, SQL_PW, SQL_DB
 from final.situation_dict import SITUATION_DICT
 import time
 import pymysql.cursors
@@ -145,17 +146,17 @@ if __name__ == '__main__':
     hour = [''] * 24
     hour[0]  = hour[1]  = hour[2]  = "深夜"
     hour[3]  = hour[4]  = hour[5]  = "明け方"
-    hour[6]  = hour[7]  = hour[8]  = hour[9]  = hour[10] = "朝"
-    hour[11] = hour[12] = hour[13] = hour[14] = "昼"
+    hour[6]  = hour[7]  = hour[8]  = hour[9] = "朝"
+    hour[10] = hour[11] = hour[12] = hour[13] = hour[14] = "昼"
     hour[15] = hour[16] = hour[17] = "夕方"
     hour[18] = hour[19] = hour[20] = hour[21] = hour[22] = hour[23] = "夜"
     week = ["月曜日", "火曜日", "水曜日", "木曜日", "金曜日", "土曜日", "日曜日"]
 
     mecab = MeCab.Tagger("-d /usr/lib/mecab/dic/mecab-ipadic-neologd -Owakati")
-    connection = pymysql.connect(host='localhost',
-                                 user='root',
-                                 password='mysql',
-                                 db='twitter',
+    connection = pymysql.connect(host=SQL_HOST,
+                                 user=SQL_USER,
+                                 password=SQL_PW,
+                                 db=SQL_DB,
                                  charset='utf8',
                                  cursorclass=pymysql.cursors.DictCursor)
 
